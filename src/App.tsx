@@ -5,12 +5,16 @@ import Login from "./pages/auth/Login";
 import theme from "./theme";
 import { ThemeProvider } from "styled-components";
 import Dashboard from "./pages/dashboard";
+import DefaultLayout from "./DefaultLayout";
 
 function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <Dashboard/>
+        <DefaultLayout>
+          <Dashboard/>
+        </DefaultLayout>
+
       </ThemeProvider>
     </>
   );

@@ -1,0 +1,96 @@
+/* General styles */
+
+  
+  /* Sidebar styles */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80px; /* Default collapsed width */
+    height: 100vh;
+    background: linear-gradient(to bottom right,#6a4895, #c19ced);
+    color: white;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    z-index: 1000;
+  }
+  
+  .sidebar-open {
+    width: 250px; /* Expanded width */
+  }
+  
+  .sidebar-header {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: end;
+  }
+  
+  .sidebar-header .toggle-icon {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar ul li {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: color 0.3s ease;
+  }
+  
+  .sidebar ul li a:hover {
+    color: #ffd700;
+  }
+  
+  .sidebar ul li i {
+    font-size: 1.5rem;
+    min-width: 40px; /* Ensure icons remain aligned */
+    text-align: center;
+  }
+  
+  .sidebar ul li span {
+    transition: opacity 0.3s ease, width 0.3s ease;
+  }
+  
+  .hidden {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  
+  .visible {
+    opacity: 1;
+    width: auto;
+  }
+  
+  /* Main content styles */
+  .content {
+    margin-left: 80px; /* Adjusted for collapsed sidebar */
+    padding: 20px;
+    transition: margin-left 0.4s ease;
+    width: 100%;
+    background: #faf9f9;
+    height: 100vh;
+  }
+  
+  .sidebar-open ~ .content {
+    margin-left: 250px; /* Adjusted for expanded sidebar */
+  }
+  

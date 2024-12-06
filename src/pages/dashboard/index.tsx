@@ -1,7 +1,14 @@
+import Cards from "../../components/Cards";
+import Sidebar from "../../components/Sidebar";
+
 const Dashboard = () => {
     return(
         <>
-        tem
+           <div className="row">
+                <Cards title="Check In"/>
+                <Cards title="Check Out"/>
+           </div>
+
         </>
     )
 }
