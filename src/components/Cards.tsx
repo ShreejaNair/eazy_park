@@ -4,7 +4,7 @@ const Cards = ({ title }: { title: string }) => {
     return (
         <div className="col-md-6 col-lg-4 col-xl-3 order-0 mb-4">
             <div className="card shadow-sm mb-5 bg-body rounded border-0">
-                <div className="card-header d-flex align-items-center justify-content-between p-4 border-0" style={{ background: "linear-gradient(to right bottom, rgb(246, 186, 5), rgb(240, 234, 199))", color: "#000" }}>
+                <div className="card-header d-flex align-items-center justify-content-between p-4 border-0" style={{ background: "#e3e3e3" }}>
                     <div className="card-title mb-0">
                         <h5 className="m-0 me-2">{title}</h5>
 

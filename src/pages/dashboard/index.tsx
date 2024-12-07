@@ -1,13 +1,13 @@
 import Cards from "../../components/Cards";
+import Filter from "../../components/Filter";
 import Greetings from "../../components/Greetings";
-import Sidebar from "../../components/Sidebar";
 
 const Dashboard = () => {
     return(
         <>
             <div className="row">
                 <Greetings/>
-
+                <Filter/>
             </div>
             <div className="row">
                 <Cards title="Check In"/>
