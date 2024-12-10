@@ -4,8 +4,7 @@ import * as Yup from "yup";
 import { useTheme } from "styled-components";
 import { useState } from "react";
 import { login } from "../../services/apiService";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
@@ -15,7 +14,7 @@ const Login = () => {
   const theme = useTheme();
 
   const validationSchema = Yup.object({
-    userId: Yup.string().required("Email Id is required"),
+    userId: Yup.string().required("User Id is required"),
     password: Yup.string()
       .min(4, "Password must be at least 4 characters")
       .required("Password is required"),
@@ -36,22 +35,26 @@ const Login = () => {
     setIsLoading(true);
     try {
       const response = await login(userId, password);
+      console.log("response-response-response", response);
       if (response?.data?.token) {
         const token = response.data.token;
-        localStorage.setItem("authToken", token);
+        localStorage.setItem("token", token);
         localStorage.setItem("facilityId", response.data.facilityid)
         localStorage.setItem("facilityname", response.data.facilityname)
         localStorage.setItem("role", response.data.role)
         localStorage.setItem("username", response.data.username)
         navigate("/dashboard")
+        
       } else {
         console.log(
           response?.data?.message || "Something went wrong. Please try again"
-
         );
-        toast(response?.data?.message || "Something went wrong. Please try again", {
-          style: { backgroundColor: "red", color: "white" },
-        });
+        toast(
+          response?.data?.message || "Something went wrong. Please try again",
+          {
+            style: { backgroundColor: "red", color: "white" },
+          }
+        );
       }
     } catch (error: any) {
       if (error.response?.data?.message) {
@@ -72,11 +75,15 @@ const Login = () => {
 
   return (
     <>
-      <div className="row " style={{height:"100vh"}}>
-        <div className="d-none d-lg-flex col-lg-7 col-xl-7 px-5 py-3" style={{background: "linear-gradient(rgb(196, 163, 250), rgb(236, 236, 248), rgb(197, 211, 241))"}}>
-          <div className="col-lg-1">
-            
-          </div>
+      <div className="row " style={{ height: "100vh" }}>
+        <div
+          className="d-none d-lg-flex col-lg-7 col-xl-7 px-5 py-3"
+          style={{
+            background:
+              "linear-gradient(rgb(196, 163, 250), rgb(236, 236, 248), rgb(197, 211, 241))",
+          }}
+        >
+          <div className="col-lg-1"></div>
           <div className="w-100 d-flex justify-content-center py-3 align-items-center">
             <img
               src="park.png"
@@ -91,8 +98,6 @@ const Login = () => {
         </div>
         <div className="d-flex col-12 col-lg-5 col-xl-5 justify-content-center align-items-center authentication-bg p-sm-12 p-6">
           <div className="">
-            
-          
             <h4 className="mb-2 text-center">Welcome to EazyPark! 👋</h4>
             <p className="mb-4">
               Please sign-in to your account and start the adventure
@@ -107,14 +112,14 @@ const Login = () => {
                 <Form id="formAuthentication" className="mb-3">
                   <div className="mb-3">
                     <label htmlFor="email" className="form-label">
-                      Email
+                      User Id
                     </label>
                     <Field
                       type="text"
                       name="userId"
                       id="userId"
                       className="form-control"
-                      placeholder="Enter your Email Id"
+                      placeholder="Enter your User Id"
                       autoFocus
                     />
                     <ErrorMessage
@@ -167,7 +172,10 @@ const Login = () => {
                     <button
                       aria-label="Click me"
                       className="btn d-grid w-100"
-                      style={{ backgroundColor: theme.color.primary, color:theme.text_color.primary }}
+                      style={{
+                        backgroundColor: theme.color.primary,
+                        color: theme.text_color.primary,
+                      }}
                       type="submit"
                       disabled={isSubmitting || isLoading}
                     >
@@ -179,20 +187,6 @@ const Login = () => {
             </Formik>
 
             <p className="text-center">
-            <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="dark"
-              
-            />
-              
               {/* <Link aria-label="Go to Register Page" to='/auth/register' className="registration-link">
                             <span>Create an account</span>
                         </Link> */}

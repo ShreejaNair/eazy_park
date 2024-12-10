@@ -42,5 +42,14 @@ export const login = async (userId: string, password: string) => {
 export const dashboard = async(facilityid:string, token:string, inputdatetime:string) => {
   return api.post("/ReportAPI/Report/GetAdminMISReportWeb", {facilityid, token, inputdatetime})
 }
+export const getFacilityList = async (
+  deviceuniqueid: string,
+  token: string
+) => {
+  return api.post("/FacilityAdmin/Admin/RefreshMappingWeb", {
+    deviceuniqueid,
+    token,
+  });
+};
 
 export default api;
