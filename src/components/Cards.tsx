@@ -20,20 +20,7 @@ const Cards = ({ title }: { title: string }) => {
                         >
                             <i className="bx bx-dots-vertical-rounded"></i>
                         </button>
-                        {/* <div
-                            className="dropdown-menu dropdown-menu-end"
-                            aria-labelledby="orederStatistics"
-                        >
-                            <a aria-label="select all " className="dropdown-item" href="#">
-                                Select All
-                            </a>
-                            <a aria-label="refresh" className="dropdown-item" href="#">
-                                Refresh
-                            </a>
-                            <a aria-label="share" className="dropdown-item" href="#">
-                                Share
-                            </a>
-                        </div> */}
+                        
                     </div>
                 </div>
                 <div className="card-body p-4">

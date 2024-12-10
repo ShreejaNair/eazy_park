@@ -39,4 +39,8 @@ export const login = async (userId: string, password: string) => {
   return api.post("/FacilityAdmin/Admin/LogInWeb", { userId, password });
 };
 
+export const dashboard = async(facilityid:string, token:string, inputdatetime:string) => {
+  return api.post("/ReportAPI/Report/GetAdminMISReportWeb", {facilityid, token, inputdatetime})
+}
+
 export default api;

@@ -6,9 +6,11 @@ import { useState } from "react";
 import { login } from "../../services/apiService";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate()
 
   const theme = useTheme();
 
@@ -37,6 +39,11 @@ const Login = () => {
       if (response?.data?.token) {
         const token = response.data.token;
         localStorage.setItem("authToken", token);
+        localStorage.setItem("facilityId", response.data.facilityid)
+        localStorage.setItem("facilityname", response.data.facilityname)
+        localStorage.setItem("role", response.data.role)
+        localStorage.setItem("username", response.data.username)
+        navigate("/dashboard")
       } else {
         console.log(
           response?.data?.message || "Something went wrong. Please try again"
