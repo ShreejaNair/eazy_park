@@ -39,4 +39,14 @@ export const login = async (userId: string, password: string) => {
   return api.post("/FacilityAdmin/Admin/LogInWeb", { userId, password });
 };
 
+export const getFacilityList = async (
+  deviceuniqueid: string,
+  token: string
+) => {
+  return api.post("/FacilityAdmin/Admin/RefreshMappingWeb", {
+    deviceuniqueid,
+    token,
+  });
+};
+
 export default api;
