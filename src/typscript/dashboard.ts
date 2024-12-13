@@ -8,3 +8,17 @@ export interface Payment {
     paymentmode: number,
     amountcollected: number
 }
+
+export interface Vehicle {
+    type_id:number,
+    type_name: string,
+    image: string
+}
+
+export interface Vehicle_details {
+    [type_id:number]: 
+    { 
+        type_name: string, 
+        image: string 
+    }
+}

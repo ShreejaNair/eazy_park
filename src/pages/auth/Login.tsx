@@ -24,7 +24,7 @@ const Login = () => {
     values: { userId: string; password: string },
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
   ) => {
-    console.log("Form Data:", values);
+    
     if (values.userId && values.password) {
       await handleLogin(values.userId, values.password);
     }
@@ -35,7 +35,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       const response = await login(userId, password);
-      console.log("response-response-response", response);
+      
       if (response?.data?.token) {
         const token = response.data.token;
         localStorage.setItem("token", token);

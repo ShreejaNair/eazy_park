@@ -52,4 +52,11 @@ export const getFacilityList = async (
   });
 };
 
+export const getAllVehicles = async (token:string) =>{
+  return api.post("/FacilityAdmin/Admin/GetAllVehicleTypeWeb", {
+    deviceuniqueid:"Web",
+    token
+  });
+}
+
 export default api;

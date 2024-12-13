@@ -3,10 +3,10 @@ import Cards from "../../components/Cards";
 import Filter from "../../components/Filter";
 import Greetings from "../../components/Greetings";
 import moment from "moment";
-import { dashboard } from "../../services/apiService";
+import { dashboard, getAllVehicles } from "../../services/apiService";
 import { toast } from "react-toastify";
 import { getFacilityList } from "../../services/apiService";
-import { CheckReport, Payment } from "../../typscript/dashboard";
+import { CheckReport, Payment, Vehicle, Vehicle_details } from "../../typscript/dashboard";
 import React, { Suspense } from 'react';
 const Dashboard = () => {
 
@@ -14,10 +14,11 @@ const Dashboard = () => {
   const [checkOut, setCheckOut] = useState<CheckReport[]>([])
   const [paymentMode, setPaymentmode] = useState<Payment[]>([])
   const [facilityList, setFacilityList] = useState([]);
+  const [vehicles, setVehicles] = useState<Vehicle_details[]>([]);
+  const token:string = localStorage.getItem("token") || "";
   useEffect(() => {
     try {
       const getReport = async () => {
-        const token = localStorage.getItem("authToken") || ""
         // const facilityId = localStorage.getItem("facilityId") || ""
         const facilityId = "4"
         // const date = moment().format("DD-MMM-YYYY")
@@ -36,15 +37,35 @@ const Dashboard = () => {
     }
   }, [])
   useEffect(() => {
+    getVehicles()
     getFacility();
   }, []);
 
+  const getVehicles = async () => {
+    try{
+      const response = await getAllVehicles(token) 
+      let data:Vehicle_details[] = []
+      let vehicle = null
+      if (response?.data?.details?.[0]){
+        vehicle = response.data.details
+        vehicle.forEach((element: Vehicle) => {
+          // data.push({[element.type_id]: {type_name: element.type_name, image: element.image}})
+          data.push({[2]: {type_name: element.type_name, image: element.image}})
+        });
+        setVehicles(data)
+        
+      }
+      
 
+    }catch(error) {
+      toast.error("Something went wrong, Try again Later")
+    }
+  }
 
   const getFacility = async () => {
     try {
       const role = localStorage.getItem("role");
-      const token = localStorage.getItem("token");
+      
       if (role && token && Number(role) == 5001) {
         const deviceUniqueId = "Web1";
         const response = await getFacilityList(deviceUniqueId, token);
@@ -82,9 +103,9 @@ const Dashboard = () => {
         <Filter list={facilityList} onChange={handleFilterchange} />
       </div>
       <div className="row">
-        <Cards title="Check In" report={checkIn} />
-        <Cards title="Check Out" report={checkOut} />
-        <Cards title="Payment" report={paymentMode} />
+        <Cards title="Check In" report={checkIn} details={vehicles} />
+        {/* <Cards title="Check Out" report={checkOut} details={vehicles} /> */}
+        {/* <Cards title="Payment" report={paymentMode} /> */}
       </div>
     </>
   );

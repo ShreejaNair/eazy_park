@@ -1,13 +1,14 @@
 
 import DonutChart from 'react-donut-chart';
-import { CheckReport, Payment } from '../typscript/dashboard';
+import { CheckReport, Payment, Vehicle_details } from '../typscript/dashboard';
 import { useEffect, useState } from 'react';
-const Cards = ({ title, report }: { title: string, report: (CheckReport | Payment)[] }) => {
+const Cards = ({ title, report, details }: { title: string, report: (CheckReport | Payment)[], details: Vehicle_details[] }) => {
 
     interface GraphData {
         label: string,
         value: number
     }
+    const vehicle = details[0]
     const [total, setTotal] = useState<number>(0)
     const [graphData, setGraphData] = useState<GraphData[]>([])
     useEffect(() => {
@@ -23,8 +24,11 @@ const Cards = ({ title, report }: { title: string, report: (CheckReport | Paymen
         setTotal(sum)
         let data: GraphData[] = []
         report.forEach((item) => {
+            
             if ('vehiclecount' in item) {
-                data.push({ label: "Car", value: item.vehiclecount })
+               
+                let label = vehicle[item.vehicletype].type_name || ""
+                data.push({ label: label, value: item.vehiclecount })
             } else if ('amountcollected' in item) {
                 data.push({ label: "Car", value: item.amountcollected })
             }
@@ -71,14 +75,14 @@ const Cards = ({ title, report }: { title: string, report: (CheckReport | Paymen
                         {report.map((val, index) => {
                             return (
                                 <li key={index} className="d-flex mb-4 pb-1">
-                                    <div className="avatar flex-shrink-0 me-3 p-1 rounded" style={{ background: "#e9a6e9" }}>
+                                    <div className="avatar flex-shrink-0 rounded" style={{width:"20%", marginRight:"17px" }}>
                                         <span className="avatar-initial rounded bg-label-primary">
-                                            <i className="fa-sharp-duotone fa-solid fa-car" style={{ color: "#ea75ea" }}></i>
+                                            <img className='img-fluid' src={'vehicletype' in val ? `data:image/png;base64,${vehicle[val.vehicletype].image}` : ""} />
                                         </span>
                                     </div>
                                     <div className="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                                        <div className="me-2">
-                                            <h6 className="mb-0">Car</h6>
+                                        <div className="me-2 ">
+                                            <h6 className="mb-0">{'vehicletype' in val ? vehicle[val.vehicletype].type_name : ""}</h6>
 
                                         </div>
                                         <div className="user-progress">
