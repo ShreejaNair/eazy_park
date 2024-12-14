@@ -64,7 +64,7 @@ const Filter = ({
                 </button>
                 <ul className="dropdown-menu">
                   {list.map((item: any, index: any) => (
-                    <li>
+                    <li key={index}>
                       <a
                         className="dropdown-item"
                         href="#"

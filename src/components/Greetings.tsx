@@ -6,7 +6,7 @@ const Greetings = () => {
                     <div className="col-sm-7">
                         <div className="card-body">
                             <h5 className="card-title text-primary">
-                                Good Afternoon Vaibhav! 🎉
+                                Good Afternoon {localStorage.getItem("username")}! 🎉
                             </h5>
                                                        
                         </div>

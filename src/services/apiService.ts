@@ -85,4 +85,13 @@ export const getCustomParkingDashboardReportByDate = async (
   );
 };
 
+export const getAllPaymentTypes = async (token:string) =>{
+  return api.post("/FacilityAdmin/Admin/GetPaymentOptionsWeb", {
+    deviceuniqueid:"Web",
+    token
+  });
+}
+
+
+
 export default api;

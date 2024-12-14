@@ -6,6 +6,7 @@ import moment from "moment";
 import {
   dashboard,
   getAllVehicles,
+  getAllPaymentTypes,
   getCustomParkingDashboardReportByDate,
 } from "../../services/apiService";
 import { toast } from "react-toastify";
@@ -13,10 +14,12 @@ import { getFacilityList } from "../../services/apiService";
 import {
   CheckReport,
   Payment,
+  Payment_details,
   Vehicle,
   Vehicle_details,
+  Payment_Type,
 } from "../../typscript/dashboard";
-import React, { Suspense } from "react";
+
 const Dashboard = () => {
   const [checkIn, setCheckIn] = useState<CheckReport[]>([]);
   const [checkOut, setCheckOut] = useState<CheckReport[]>([]);
@@ -30,20 +33,20 @@ const Dashboard = () => {
   const [selectedFacilityName, setSelectedFacilityName] = useState<
     string | null
   >(null);
+  const [paymentType, setPaymentType] = useState<Vehicle_details[]>([]);
   const token: string = localStorage.getItem("token") || "";
-
   useEffect(() => {
     try {
       const getReport = async () => {
-        // const facilityId = localStorage.getItem("facilityId") || ""
-        const facilityId = "4";
-        // const date = moment().format("DD-MMM-YYYY")
-        const date = "24-Nov-2024";
+        // const facilityId = localStorage.getItem("facilityId") || "";
+        const facilityId = "29";
+        // const date = moment().format("DD-MMM-YYYY");
+        const date = "14-Dec-2024";
         const response = await dashboard(facilityId, token, date);
         if (response?.data?.data?.[0]) {
-          setCheckIn(response.data.data[0].checkin);
-          setCheckOut(response.data.data[0].checkout);
-          setPaymentmode(response.data.data[0].payment);
+          setCheckIn(response.data.data[0]?.checkin || []);
+          setCheckOut(response.data.data[0]?.checkout || []);
+          setPaymentmode(response.data.data[0]?.payment || []);
         }
       };
       getReport();
@@ -51,12 +54,34 @@ const Dashboard = () => {
       toast.error("Something went wrong, Try again Later");
     }
   }, []);
+
   useEffect(() => {
     setSelectedFacilityId(localStorage.getItem("facilityId"));
     setSelectedFacilityName(localStorage.getItem("facilityName"));
     getVehicles();
+    getAllPayments();
     getFacility();
   }, []);
+
+  const getAllPayments = async () => {
+    try {
+      const response = await getAllPaymentTypes(token);
+      let data: Vehicle_details[] = [];
+      let pay = null;
+      if (response?.data?.options?.[0]) {
+        pay = response.data.options;
+        pay.forEach((pay_type: Payment_Type) => {
+          data.push({
+            [pay_type.statuscode]: { type_name: pay_type.status, image: "" },
+          });
+        });
+        setPaymentType(data);
+      }
+    } catch (error) {
+      console.log("getAllPayments - error", error);
+      toast.error("Something went wrong Payment, Try again Later");
+    }
+  };
 
   const getVehicles = async () => {
     try {
@@ -66,22 +91,23 @@ const Dashboard = () => {
       if (response?.data?.details?.[0]) {
         vehicle = response.data.details;
         vehicle.forEach((element: Vehicle) => {
-          // data.push({[element.type_id]: {type_name: element.type_name, image: element.image}})
           data.push({
-            [2]: { type_name: element.type_name, image: element.image },
+            [element.type_id]: {
+              type_name: element.type_name,
+              image: element.image,
+            },
           });
         });
         setVehicles(data);
       }
     } catch (error) {
-      toast.error("Something went wrong, Try again Later");
+      toast.error("Something went wrong Vehicle, Try again Later");
     }
   };
 
   const getFacility = async () => {
     try {
       const role = localStorage.getItem("role");
-
       if (role && token && Number(role) == 5001) {
         setOtherFacilityAccess(true);
         const deviceUniqueId = "Web1";
@@ -121,15 +147,15 @@ const Dashboard = () => {
         fromDate,
         toDate
       );
-      console.log("Response", response);
+      // console.log("Response", response);
       if (response?.data?.data[0]) {
-        setCheckIn(response?.data.data[0]?.checkin);
-        setCheckOut(response?.data.data[0]?.checkout);
-        setPaymentmode(response?.data.data[0]?.payment);
-        setFacilityList(response.data.groupmapping.data);
+        setCheckIn(response?.data?.data[0]?.checkin || []);
+        setCheckOut(response?.data?.data[0]?.checkout || []);
+        setPaymentmode(response?.data?.data[0]?.payment || []);
       }
     } catch (error) {
-      toast.error("Something went wrong. try later");
+      console.log("getReportByDate-Error", error);
+      // toast.error("Something went wrong. try later");
     }
   };
 
@@ -151,8 +177,8 @@ const Dashboard = () => {
       </div>
       <div className="row">
         <Cards title="Check In" report={checkIn} details={vehicles} />
-        {/* <Cards title="Check Out" report={checkOut} details={vehicles} /> */}
-        {/* <Cards title="Payment" report={paymentMode} /> */}
+        <Cards title="Check Out" report={checkOut} details={vehicles} />
+        <Cards title="Payment" report={paymentMode} details={paymentType} />
       </div>
     </>
   );
