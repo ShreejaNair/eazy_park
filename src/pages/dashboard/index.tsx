@@ -15,7 +15,7 @@ const Dashboard = () => {
   const [paymentMode, setPaymentmode] = useState<Payment[]>([])
   const [facilityList, setFacilityList] = useState([]);
   const [vehicles, setVehicles] = useState<Vehicle_details[]>([]);
-  const [paymentType, setPaymentType] = useState<Payment_details[]>([])
+  const [paymentType, setPaymentType] = useState<Vehicle_details[]>([])
   const token:string = localStorage.getItem("token") || "";
   useEffect(() => {
     try {
@@ -23,7 +23,7 @@ const Dashboard = () => {
         // const facilityId = localStorage.getItem("facilityId") || ""
         const facilityId = "29"
         // const date = moment().format("DD-MMM-YYYY")
-        const date = "12-Dec-2024"
+        const date = "14-Dec-2024"
         const response = await dashboard(facilityId, token, date)
         if (response?.data?.data?.[0]) {
           setCheckIn(response.data.data[0].checkin)
@@ -46,18 +46,18 @@ const Dashboard = () => {
   const getAllPayments = async () => {
     try {
       const response = await getAllPaymentTypes(token)
-      let data:Payment_details[] = []
+      let data:Vehicle_details[] = []
       let pay = null
       if (response?.data?.options?.[0]) {
         pay = response.data.options
         pay.forEach((pay_type: Payment_Type) => {
-          data.push({[pay_type.statuscode]: {status:pay_type.status}})
+          data.push({[pay_type.statuscode]: {type_name:pay_type.status, image:""}})
         }); 
         setPaymentType(data)
       }
 
     }catch(error) {
-      toast.error("Something went wrong, Try again Later")
+      toast.error("Something went wrong Payment, Try again Later")
     }
   }
 
@@ -74,10 +74,8 @@ const Dashboard = () => {
         setVehicles(data)
         
       }
-      
-
     }catch(error) {
-      toast.error("Something went wrong, Try again Later")
+      toast.error("Something went wrong Vehicle, Try again Later")
     }
   }
 
@@ -124,7 +122,7 @@ const Dashboard = () => {
       <div className="row">
         <Cards title="Check In" report={checkIn} details={vehicles} />
         <Cards title="Check Out" report={checkOut} details={vehicles} />
-        {/* <Cards title="Payment" report={paymentMode} details={paymentType} /> */}
+        <Cards title="Payment" report={paymentMode} details={paymentType} />
       </div>
     </>
   );

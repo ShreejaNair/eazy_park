@@ -33,3 +33,7 @@ export interface Payment_Type {
     statuscode: number,
     status: string
 }
+export interface GraphData {
+    label: string,
+    value: number
+}
