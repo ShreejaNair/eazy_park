@@ -3,10 +3,10 @@ import Cards from "../../components/Cards";
 import Filter from "../../components/Filter";
 import Greetings from "../../components/Greetings";
 import moment from "moment";
-import { dashboard, getAllVehicles } from "../../services/apiService";
+import { dashboard, getAllPaymentTypes, getAllVehicles } from "../../services/apiService";
 import { toast } from "react-toastify";
 import { getFacilityList } from "../../services/apiService";
-import { CheckReport, Payment, Vehicle, Vehicle_details } from "../../typscript/dashboard";
+import { CheckReport, Payment, Payment_details, Vehicle, Vehicle_details, Payment_Type } from "../../typscript/dashboard";
 import React, { Suspense } from 'react';
 const Dashboard = () => {
 
@@ -15,14 +15,15 @@ const Dashboard = () => {
   const [paymentMode, setPaymentmode] = useState<Payment[]>([])
   const [facilityList, setFacilityList] = useState([]);
   const [vehicles, setVehicles] = useState<Vehicle_details[]>([]);
+  const [paymentType, setPaymentType] = useState<Payment_details[]>([])
   const token:string = localStorage.getItem("token") || "";
   useEffect(() => {
     try {
       const getReport = async () => {
         // const facilityId = localStorage.getItem("facilityId") || ""
-        const facilityId = "4"
+        const facilityId = "29"
         // const date = moment().format("DD-MMM-YYYY")
-        const date = "24-Nov-2024"
+        const date = "12-Dec-2024"
         const response = await dashboard(facilityId, token, date)
         if (response?.data?.data?.[0]) {
           setCheckIn(response.data.data[0].checkin)
@@ -38,8 +39,27 @@ const Dashboard = () => {
   }, [])
   useEffect(() => {
     getVehicles()
+    getAllPayments()
     getFacility();
   }, []);
+
+  const getAllPayments = async () => {
+    try {
+      const response = await getAllPaymentTypes(token)
+      let data:Payment_details[] = []
+      let pay = null
+      if (response?.data?.options?.[0]) {
+        pay = response.data.options
+        pay.forEach((pay_type: Payment_Type) => {
+          data.push({[pay_type.statuscode]: {status:pay_type.status}})
+        }); 
+        setPaymentType(data)
+      }
+
+    }catch(error) {
+      toast.error("Something went wrong, Try again Later")
+    }
+  }
 
   const getVehicles = async () => {
     try{
@@ -49,8 +69,7 @@ const Dashboard = () => {
       if (response?.data?.details?.[0]){
         vehicle = response.data.details
         vehicle.forEach((element: Vehicle) => {
-          // data.push({[element.type_id]: {type_name: element.type_name, image: element.image}})
-          data.push({[2]: {type_name: element.type_name, image: element.image}})
+          data.push({[element.type_id]: {type_name: element.type_name, image: element.image}})
         });
         setVehicles(data)
         
@@ -104,8 +123,8 @@ const Dashboard = () => {
       </div>
       <div className="row">
         <Cards title="Check In" report={checkIn} details={vehicles} />
-        {/* <Cards title="Check Out" report={checkOut} details={vehicles} /> */}
-        {/* <Cards title="Payment" report={paymentMode} /> */}
+        <Cards title="Check Out" report={checkOut} details={vehicles} />
+        {/* <Cards title="Payment" report={paymentMode} details={paymentType} /> */}
       </div>
     </>
   );

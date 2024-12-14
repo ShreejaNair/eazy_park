@@ -59,4 +59,13 @@ export const getAllVehicles = async (token:string) =>{
   });
 }
 
+export const getAllPaymentTypes = async (token:string) =>{
+  return api.post("/FacilityAdmin/Admin/GetPaymentOptionsWeb", {
+    deviceuniqueid:"Web",
+    token
+  });
+}
+
+
+
 export default api;
