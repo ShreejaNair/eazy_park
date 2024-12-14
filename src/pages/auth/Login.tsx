@@ -4,12 +4,12 @@ import * as Yup from "yup";
 import { useTheme } from "styled-components";
 import { useState } from "react";
 import { login } from "../../services/apiService";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const theme = useTheme();
 
@@ -24,7 +24,6 @@ const Login = () => {
     values: { userId: string; password: string },
     { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
   ) => {
-    
     if (values.userId && values.password) {
       await handleLogin(values.userId, values.password);
     }
@@ -35,16 +34,15 @@ const Login = () => {
     setIsLoading(true);
     try {
       const response = await login(userId, password);
-      
+
       if (response?.data?.token) {
         const token = response.data.token;
         localStorage.setItem("token", token);
-        localStorage.setItem("facilityId", response.data.facilityid)
-        localStorage.setItem("facilityname", response.data.facilityname)
-        localStorage.setItem("role", response.data.role)
-        localStorage.setItem("username", response.data.username)
-        navigate("/dashboard")
-        
+        localStorage.setItem("facilityId", response.data.facilityid);
+        localStorage.setItem("facilityName", response.data.facilityname);
+        localStorage.setItem("role", response.data.role);
+        localStorage.setItem("username", response.data.username);
+        navigate("/dashboard");
       } else {
         console.log(
           response?.data?.message || "Something went wrong. Please try again"
@@ -81,8 +79,7 @@ const Login = () => {
           style={{
             background:
               "linear-gradient(rgb(196, 163, 250), rgb(236, 236, 248), rgb(197, 211, 241))",
-          }}
-        >
+          }}>
           <div className="col-lg-1"></div>
           <div className="w-100 d-flex justify-content-center py-3 align-items-center">
             <img
@@ -106,8 +103,7 @@ const Login = () => {
             <Formik
               initialValues={{ userId: "", password: "" }}
               validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-            >
+              onSubmit={handleSubmit}>
               {({ isSubmitting }) => (
                 <Form id="formAuthentication" className="mb-3">
                   <div className="mb-3">
@@ -177,8 +173,7 @@ const Login = () => {
                         color: theme.text_color.primary,
                       }}
                       type="submit"
-                      disabled={isSubmitting || isLoading}
-                    >
+                      disabled={isSubmitting || isLoading}>
                       {isSubmitting || isLoading ? "Signing in..." : "Login "}
                     </button>
                   </div>

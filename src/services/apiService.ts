@@ -39,9 +39,18 @@ export const login = async (userId: string, password: string) => {
   return api.post("/FacilityAdmin/Admin/LogInWeb", { userId, password });
 };
 
-export const dashboard = async(facilityid:string, token:string, inputdatetime:string) => {
-  return api.post("/ReportAPI/Report/GetAdminMISReportWeb", {facilityid, token, inputdatetime})
-}
+export const dashboard = async (
+  facilityid: string,
+  token: string,
+  inputdatetime: string
+) => {
+  return api.post("/ReportAPI/Report/GetAdminMISReportWeb", {
+    facilityid,
+    token,
+    inputdatetime,
+  });
+};
+
 export const getFacilityList = async (
   deviceuniqueid: string,
   token: string
@@ -52,11 +61,28 @@ export const getFacilityList = async (
   });
 };
 
-export const getAllVehicles = async (token:string) =>{
+export const getAllVehicles = async (token: string) => {
   return api.post("/FacilityAdmin/Admin/GetAllVehicleTypeWeb", {
-    deviceuniqueid:"Web",
-    token
+    deviceuniqueid: "Web",
+    token,
   });
-}
+};
+
+export const getCustomParkingDashboardReportByDate = async (
+  facilityId: string,
+  token: string,
+  fromDateTime: string,
+  toDateTime: string
+) => {
+  return api.post(
+    "/ReportAPI/Report/GetAdminParkingCustomDateReportDashboardWeb",
+    {
+      facilityid: facilityId,
+      token,
+      fromdatetime: fromDateTime,
+      todatetime: toDateTime,
+    }
+  );
+};
 
 export default api;
