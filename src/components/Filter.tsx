@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import moment from "moment";
 import { DatePicker, InputGroup, Button } from "rsuite";
 import "rsuite/DatePicker/styles/index.css";
+import { isAfter } from "rsuite/esm/internals/utils/date";
 const Filter = ({
   list,
   onChange,
@@ -16,8 +17,8 @@ const Filter = ({
   const [selectedFacilityId, setSelectedFacilityId] = useState(
     defaultSelectedFacilityId
   );
-  const [fromDate, setFromDate] = useState<any>(null);
-  const [toDate, setToDate] = useState<any>(null);
+  const [fromDate, setFromDate] = useState<any>(new Date());
+  const [toDate, setToDate] = useState<any>(new Date());
 
   useEffect(() => {
     setSelectedFacilityName(defaultSelectedFacilityName);
@@ -25,17 +26,18 @@ const Filter = ({
   }, [defaultSelectedFacilityId, defaultSelectedFacilityName]);
 
   const handleFilter = () => {
-    console.log(
-      "selectedFacilityId && selectedFacilityName && fromDate && toDate",
-      selectedFacilityId,
-      selectedFacilityName,
-      fromDate,
-      toDate
-    );
     if (selectedFacilityId && selectedFacilityName && fromDate && toDate) {
-      onChange?.(selectedFacilityId, fromDate, toDate);
+      if (moment(fromDate).isAfter(toDate)) {
+        toast("To Date should not be greater than From Date");
+        return;
+      }
+      onChange?.(
+        selectedFacilityId,
+        moment(fromDate).format("DD-MMM-YYYY"),
+        moment(toDate).format("DD-MMM-YYYY")
+      );
     } else {
-      toast("Please select filter");
+      toast("Please select the From Date and To Date");
     }
   };
 
@@ -51,7 +53,7 @@ const Filter = ({
                   type="button"
                   className="btn btn-warning"
                   disabled={!otherFaciltyAccess}>
-                  {selectedFacilityName + " " + selectedFacilityId || "Select"}
+                  {selectedFacilityName || "Select Facility"}
                   {/* Show default selected value */}
                 </button>
                 <button
@@ -69,8 +71,6 @@ const Filter = ({
                         className="dropdown-item"
                         href="#"
                         onClick={() => {
-                          // handleFacilityChange(item.facilityid, item.name)
-                          console.log("item.facilityId", item);
                           setSelectedFacilityId(item.facilityid);
                           setSelectedFacilityName(item.name);
                         }}>
@@ -82,25 +82,40 @@ const Filter = ({
               </div>
               <InputGroup className="shadow-sm" style={{ width: 428 }}>
                 <DatePicker
-                  format="dd-MM-yyyy"
+                  defaultValue={fromDate}
+                  format="dd-MMM-yyyy"
                   block
                   appearance="subtle"
                   placeholder="From Date"
                   style={{ width: 230 }}
-                  onChange={(value) =>
-                    setFromDate(moment(value).format("DD-MMM-YYYY"))
-                  }
+                  oneTap
+                  shouldDisableDate={(date) => moment(date).isAfter(new Date())}
+                  onChange={(value) => {
+                    setFromDate(moment(value).format("DD-MMM-YYYY"));
+                  }}
+                  onClean={() => {
+                    setFromDate(null);
+                  }}
                 />
                 <InputGroup.Addon>to</InputGroup.Addon>
                 <DatePicker
-                  format="dd-MM-yyyy"
+                  defaultValue={toDate}
+                  format="dd-MMM-yyyy"
                   block
+                  oneTap
                   appearance="subtle"
                   placeholder="To Date"
                   style={{ width: 230 }}
-                  onChange={(value) =>
-                    setToDate(moment(value).format("DD-MMM-YYYY"))
+                  shouldDisableDate={(date) =>
+                    moment(date).isAfter(new Date()) ||
+                    moment(date).isBefore(fromDate)
                   }
+                  onChange={(value) => {
+                    setToDate(moment(value).format("DD-MMM-YYYY"));
+                  }}
+                  onClean={() => {
+                    setToDate(null);
+                  }}
                 />
               </InputGroup>
               <Button
