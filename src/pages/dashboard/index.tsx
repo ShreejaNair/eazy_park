@@ -19,6 +19,7 @@ import {
   Vehicle_details,
   Payment_Type,
 } from "../../typscript/dashboard";
+import StackedBar from "../../components/StackedBar";
 
 const Dashboard = () => {
   const [checkIn, setCheckIn] = useState<CheckReport[]>([]);
@@ -27,6 +28,8 @@ const Dashboard = () => {
   const [facilityList, setFacilityList] = useState([]);
   const [vehicles, setVehicles] = useState<Vehicle_details[]>([]);
   const [otherFaciltyAccess, setOtherFacilityAccess] = useState<boolean>(false);
+  const [label, setLabel] = useState<string[]>([])
+  const [last3MnthSales, setLast3MnthSales] = useState<Payment[][]>([])
   const [selectedFacilityId, setSelectedFacilityId] = useState<string | null>(
     null
   );
@@ -61,7 +64,28 @@ const Dashboard = () => {
     getVehicles();
     getAllPayments();
     getFacility();
+    getThreeMonthsSale();
   }, []);
+
+  const getThreeMonthsSale = async () => {
+    
+    const lastThreeMonths = Array.from({ length: 3 }, (_, i) => 
+      moment().subtract(2 - i, 'months').format('MMMM')
+    );
+    setLabel(lastThreeMonths)
+    let data = []
+    for await (const mnth of lastThreeMonths) {
+      let start = moment().month(mnth).startOf('month').format('DD-MMM-YYYY');
+      let end = moment().month(mnth).endOf('month').format('DD-MMM-YYYY')
+      let facilityId = "29"
+      let response = await getCustomParkingDashboardReportByDate(facilityId, token, start, end)
+      if (response?.data?.data?.[0]?.payment) {
+        data.push(response?.data?.data[0]?.payment)
+      }
+      
+    }
+    setLast3MnthSales(data)
+  }
 
   const getAllPayments = async () => {
     try {
@@ -179,6 +203,7 @@ const Dashboard = () => {
         <Cards title="Check In" report={checkIn} details={vehicles} />
         <Cards title="Check Out" report={checkOut} details={vehicles} />
         <Cards title="Payment" report={paymentMode} details={paymentType} />
+        <StackedBar labels={label}/>
       </div>
     </>
   );

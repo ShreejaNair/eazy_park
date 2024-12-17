@@ -15,7 +15,7 @@ const Cards = ({ title, report, details }: { title: string, report: (CheckReport
             if ('vehiclecount' in c) {
                 return a + c.vehiclecount;
             } else if ('amountcollected' in c) {
-                return a + c.amountcollected;
+                return a + c.amountcollected / 100;
             }
             return a;
         }, 0)
@@ -28,7 +28,7 @@ const Cards = ({ title, report, details }: { title: string, report: (CheckReport
                 data.push({ label: label, value: item.vehiclecount })
             } else if ('amountcollected' in item && Object.keys(vehicle).length > 0) {
                 let label = vehicle[item.paymentmode].type_name || ""
-                data.push({ label: label, value: item.amountcollected })
+                data.push({ label: label, value: (item.amountcollected/100) })
             }
         })
         setGraphData(data)
@@ -72,16 +72,17 @@ const Cards = ({ title, report, details }: { title: string, report: (CheckReport
                         {report.map((val, index) => {
                             let image1: string = ""
                             let name: string = ""
-                            let amount: number = 0
+                            let amount: string = ""
 
                             if ('vehicletype' in val && Object.keys(vehicle).length > 0) {
                                 image1 = `data:image/png;base64,${vehicle[val.vehicletype].image}`;
                                 name = vehicle[val.vehicletype].type_name
-                                amount = val.vehiclecount
+                                amount = ""+val.vehiclecount
                             } else if ('amountcollected' in val && Object.keys(vehicle).length > 0) {
                                 image1 = "payment.svg"
                                 name = vehicle[val.paymentmode].type_name
-                                amount = val.amountcollected
+                                amount = `₹ ${val.amountcollected/100}`
+
                             }
                             return (
                                 <li key={index} className="d-flex mb-4 pb-1">
