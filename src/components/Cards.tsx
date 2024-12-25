@@ -2,7 +2,7 @@
 import DonutChart from 'react-donut-chart';
 import { CheckReport, Payment, Vehicle_details, GraphData } from '../typscript/dashboard';
 import { useEffect, useState } from 'react';
-const Cards = ({ title, report, details }: { title: string, report: (CheckReport | Payment)[], details: Vehicle_details[] }) => {
+const Cards = ({ title, ispayment, report, details }: { title: string, ispayment:boolean, report: (CheckReport | Payment)[], details: Vehicle_details[] }) => {
 
 
     const [total, setTotal] = useState<number>(0)
@@ -58,14 +58,19 @@ const Cards = ({ title, report, details }: { title: string, report: (CheckReport
                 <div className="card-body p-4">
                     <div className="d-flex justify-content-between align-items-center mb-3">
                         <div className="d-flex flex-column gap-1">
-                            <h2 className="mb-2 ">{total}</h2>
+                            <h2 className="mb-2 ">{ispayment ? `₹`:""}{total}</h2>
                             <span>Total {title} Vehicles</span>
                         </div>
                         <div id="orderStatisticsChart">
-                            <DonutChart width={120} height={120} legend={false} strokeColor={"#fff"}
-                                colors={["#03c3ec", "#71dd37", "#696cff", "#919cab"]} innerRadius={0.75}
-                                data={graphData}
-                            />
+                            {ispayment? (
+                                
+                                    <DonutChart width={120} height={120} legend={false} strokeColor={"#fff"}
+                                        colors={["#03c3ec", "#71dd37", "#696cff", "#919cab"]} innerRadius={0.75}
+                                        data={graphData}
+                                    />
+
+                                
+                            ):""}
                         </div>
                     </div>
                     <ul className="p-0 m-0">

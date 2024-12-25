@@ -22,7 +22,7 @@
   .sidebar-header {
     padding: 15px;
     display: flex;
-    align-items: center;
+    align-items: start;
     justify-content: end;
   }
   
@@ -83,11 +83,11 @@
   /* Main content styles */
   .content {
     margin-left: 80px; /* Adjusted for collapsed sidebar */
-    padding: 20px;
+    padding: 0px 5px;
     transition: margin-left 0.4s ease;
     width: 100%;
     background: #f5f5f9;
-    height: 100vh;
+    /* height: 100vh; */
   }
   
   .sidebar-open ~ .content {

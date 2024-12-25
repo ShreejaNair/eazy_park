@@ -41,10 +41,10 @@ const Dashboard = () => {
   useEffect(() => {
     try {
       const getReport = async () => {
-        // const facilityId = localStorage.getItem("facilityId") || "";
+        let id = localStorage.getItem("facilityId") || "";
         const facilityId = "29";
-        // const date = moment().format("DD-MMM-YYYY");
-        const date = "14-Dec-2024";
+        const date = moment().format("DD-MMM-YYYY");
+        // const date = "14-Dec-2024";
         const response = await dashboard(facilityId, token, date);
         if (response?.data?.data?.[0]) {
           setCheckIn(response.data.data[0]?.checkin || []);
@@ -59,15 +59,16 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    setSelectedFacilityId(localStorage.getItem("facilityId"));
+    let id:string = localStorage.getItem("facilityId") || ""
+    setSelectedFacilityId(id);
     setSelectedFacilityName(localStorage.getItem("facilityName"));
     getVehicles();
     getAllPayments();
     getFacility();
-    getThreeMonthsSale();
+    getThreeMonthsSale(id);
   }, []);
 
-  const getThreeMonthsSale = async () => {
+  const getThreeMonthsSale = async (id:string) => {
     
     const lastThreeMonths = Array.from({ length: 3 }, (_, i) => 
       moment().subtract(2 - i, 'months').format('MMMM')
@@ -77,9 +78,10 @@ const Dashboard = () => {
     for await (const mnth of lastThreeMonths) {
       let start = moment().month(mnth).startOf('month').format('DD-MMM-YYYY');
       let end = moment().month(mnth).endOf('month').format('DD-MMM-YYYY')
-      let facilityId = "29"
+      let facilityId = id || ""
       let response = await getCustomParkingDashboardReportByDate(facilityId, token, start, end)
       if (response?.data?.data?.[0]?.payment) {
+        
         data.push(response?.data?.data[0]?.payment)
       }
       
@@ -185,12 +187,13 @@ const Dashboard = () => {
 
   const handleFilterchange = (id: string, fromDate: string, toDate: string) => {
     getReportByDate(id, fromDate, toDate);
+    getThreeMonthsSale(id)
   };
 
   return (
     <>
       <div className="row">
-        <Greetings />
+       
         <Filter
           list={facilityList}
           onChange={handleFilterchange}
@@ -200,10 +203,10 @@ const Dashboard = () => {
         />
       </div>
       <div className="row">
-        <Cards title="Check In" report={checkIn} details={vehicles} />
-        <Cards title="Check Out" report={checkOut} details={vehicles} />
-        <Cards title="Payment" report={paymentMode} details={paymentType} />
-        <StackedBar labels={label}/>
+        <Cards title="Check In" ispayment={false} report={checkIn} details={vehicles} />
+        <Cards title="Check Out" ispayment={false} report={checkOut} details={vehicles} />
+        <Cards title="Payment" ispayment={true} report={paymentMode} details={paymentType} />
+        <StackedBar labels={label} sales={last3MnthSales} details={paymentType} />
       </div>
     </>
   );
