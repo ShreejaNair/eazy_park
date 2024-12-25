@@ -25,11 +25,11 @@ const Dashboard = () => {
   const [checkIn, setCheckIn] = useState<CheckReport[]>([]);
   const [checkOut, setCheckOut] = useState<CheckReport[]>([]);
   const [paymentMode, setPaymentmode] = useState<Payment[]>([]);
-  const [facilityList, setFacilityList] = useState([]);
+  const [facilityList, setFacilityList] = useState<any>([]);
   const [vehicles, setVehicles] = useState<Vehicle_details[]>([]);
   const [otherFaciltyAccess, setOtherFacilityAccess] = useState<boolean>(false);
-  const [label, setLabel] = useState<string[]>([])
-  const [last3MnthSales, setLast3MnthSales] = useState<Payment[][]>([])
+  const [label, setLabel] = useState<string[]>([]);
+  const [last3MnthSales, setLast3MnthSales] = useState<Payment[][]>([]);
   const [selectedFacilityId, setSelectedFacilityId] = useState<string | null>(
     null
   );
@@ -38,6 +38,8 @@ const Dashboard = () => {
   >(null);
   const [paymentType, setPaymentType] = useState<Vehicle_details[]>([]);
   const token: string = localStorage.getItem("token") || "";
+  const allFacilityValue = { facilityid: "all", name: "All" };
+  const role = localStorage.getItem("role");
   useEffect(() => {
     try {
       const getReport = async () => {
@@ -52,42 +54,53 @@ const Dashboard = () => {
           setPaymentmode(response.data.data[0]?.payment || []);
         }
       };
-      getReport();
+      if (role && token && Number(role) != 5001) {
+        getReport();
+      }
     } catch (error) {
       toast.error("Something went wrong, Try again Later");
     }
   }, []);
 
   useEffect(() => {
-    let id:string = localStorage.getItem("facilityId") || ""
-    setSelectedFacilityId(id);
-    setSelectedFacilityName(localStorage.getItem("facilityName"));
+    let id: string = localStorage.getItem("facilityId") || "";
+    if (role && token && Number(role) == 5001) {
+      setSelectedFacilityId("all");
+      setSelectedFacilityName("All");
+    } else {
+      setSelectedFacilityId(id);
+      setSelectedFacilityName(localStorage.getItem("facilityName"));
+    }
     getVehicles();
     getAllPayments();
     getFacility();
     getThreeMonthsSale(id);
   }, []);
 
-  const getThreeMonthsSale = async (id:string) => {
-    
-    const lastThreeMonths = Array.from({ length: 3 }, (_, i) => 
-      moment().subtract(2 - i, 'months').format('MMMM')
+  const getThreeMonthsSale = async (id: string) => {
+    const lastThreeMonths = Array.from({ length: 3 }, (_, i) =>
+      moment()
+        .subtract(2 - i, "months")
+        .format("MMMM")
     );
-    setLabel(lastThreeMonths)
-    let data = []
+    setLabel(lastThreeMonths);
+    let data = [];
     for await (const mnth of lastThreeMonths) {
-      let start = moment().month(mnth).startOf('month').format('DD-MMM-YYYY');
-      let end = moment().month(mnth).endOf('month').format('DD-MMM-YYYY')
-      let facilityId = id || ""
-      let response = await getCustomParkingDashboardReportByDate(facilityId, token, start, end)
+      let start = moment().month(mnth).startOf("month").format("DD-MMM-YYYY");
+      let end = moment().month(mnth).endOf("month").format("DD-MMM-YYYY");
+      let facilityId = id || "";
+      let response = await getCustomParkingDashboardReportByDate(
+        facilityId,
+        token,
+        start,
+        end
+      );
       if (response?.data?.data?.[0]?.payment) {
-        
-        data.push(response?.data?.data[0]?.payment)
+        data.push(response?.data?.data[0]?.payment);
       }
-      
     }
-    setLast3MnthSales(data)
-  }
+    setLast3MnthSales(data);
+  };
 
   const getAllPayments = async () => {
     try {
@@ -138,8 +151,21 @@ const Dashboard = () => {
         setOtherFacilityAccess(true);
         const deviceUniqueId = "Web1";
         const response = await getFacilityList(deviceUniqueId, token);
+        console.log("response", response);
         if (response?.data?.groupmapping?.data) {
-          setFacilityList(response.data.groupmapping.data);
+          setFacilityList([
+            allFacilityValue,
+            ...response.data.groupmapping.data,
+          ]);
+          const currentDate = moment().format("DD-MMM-YYYY");
+          const ids = response.data.groupmapping.data
+            .filter(
+              (facility: any) =>
+                facility.facilityid !== "all" && facility.facilityid !== "28"
+            )
+            .map((facility: any) => facility.facilityid)
+            .join(",");
+          handleFilterchange(ids, currentDate, currentDate);
         } else {
           toast.error(
             response?.data?.message || "Somehing went wrong. try again."
@@ -161,6 +187,49 @@ const Dashboard = () => {
     }
   };
 
+  const setAllFacilityReports = (data: any) => {
+    let allCheckIn: any = {};
+    let allCheckOut: any = {};
+    let allPayment: any = {};
+
+    data.forEach((facility: any) => {
+      facility.checkin.forEach((checkin: any) => {
+        if (!allCheckIn[checkin.vehicletype]) {
+          allCheckIn[checkin.vehicletype] = {
+            vehicletype: checkin.vehicletype,
+            vehicletypename: checkin.vehicletypename,
+            vehiclecount: 0,
+          };
+        }
+        allCheckIn[checkin.vehicletype].vehiclecount += checkin.vehiclecount;
+      });
+      facility.checkout.forEach((checkout: any) => {
+        if (!allCheckOut[checkout.vehicletype]) {
+          allCheckOut[checkout.vehicletype] = {
+            vehicletype: checkout.vehicletype,
+            vehicletypename: checkout.vehicletypename,
+            vehiclecount: 0,
+          };
+        }
+        allCheckOut[checkout.vehicletype].vehiclecount += checkout.vehiclecount;
+      });
+
+      facility.payment.forEach((payment: any) => {
+        if (!allPayment[payment.paymentmode]) {
+          allPayment[payment.paymentmode] = {
+            paymentmode: payment.paymentmode,
+            amountcollected: 0,
+          };
+        }
+        allPayment[payment.paymentmode].amountcollected +=
+          payment.amountcollected;
+      });
+    });
+    setCheckIn(Object.values(allCheckIn) || []);
+    setCheckOut(Object.values(allCheckOut) || []);
+    setPaymentmode(Object.values(allPayment) || []);
+  };
+
   const getReportByDate = async (
     facilityId: string,
     fromDate: string,
@@ -173,8 +242,10 @@ const Dashboard = () => {
         fromDate,
         toDate
       );
-      // console.log("Response", response);
-      if (response?.data?.data[0]) {
+      console.log("Response-------", JSON.stringify(response.data.data));
+      if (response?.data?.data[1]) {
+        setAllFacilityReports(response.data.data);
+      } else if (response?.data?.data[0]) {
         setCheckIn(response?.data?.data[0]?.checkin || []);
         setCheckOut(response?.data?.data[0]?.checkout || []);
         setPaymentmode(response?.data?.data[0]?.payment || []);
@@ -186,14 +257,14 @@ const Dashboard = () => {
   };
 
   const handleFilterchange = (id: string, fromDate: string, toDate: string) => {
+    console.log("id, fromDate, toDate", id, fromDate, toDate);
     getReportByDate(id, fromDate, toDate);
-    getThreeMonthsSale(id)
+    getThreeMonthsSale(id);
   };
 
   return (
     <>
       <div className="row">
-       
         <Filter
           list={facilityList}
           onChange={handleFilterchange}
@@ -203,10 +274,29 @@ const Dashboard = () => {
         />
       </div>
       <div className="row">
-        <Cards title="Check In" ispayment={false} report={checkIn} details={vehicles} />
-        <Cards title="Check Out" ispayment={false} report={checkOut} details={vehicles} />
-        <Cards title="Payment" ispayment={true} report={paymentMode} details={paymentType} />
-        <StackedBar labels={label} sales={last3MnthSales} details={paymentType} />
+        <Cards
+          title="Check In"
+          ispayment={false}
+          report={checkIn}
+          details={vehicles}
+        />
+        <Cards
+          title="Check Out"
+          ispayment={false}
+          report={checkOut}
+          details={vehicles}
+        />
+        <Cards
+          title="Payment"
+          ispayment={true}
+          report={paymentMode}
+          details={paymentType}
+        />
+        <StackedBar
+          labels={label}
+          sales={last3MnthSales}
+          details={paymentType}
+        />
       </div>
     </>
   );

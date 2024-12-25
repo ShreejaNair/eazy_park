@@ -15,14 +15,14 @@ const Filter = ({
   const [selectedFacilityName, setSelectedFacilityName] = useState(
     defaultSelectedFacilityName
   );
-  
+
   const [selectedFacilityId, setSelectedFacilityId] = useState(
     defaultSelectedFacilityId
   );
   const [fromDate, setFromDate] = useState<any>(new Date());
   const [toDate, setToDate] = useState<any>(new Date());
   // const [all, setAll] =useState<string>("")
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     setSelectedFacilityName(defaultSelectedFacilityName);
     setSelectedFacilityId(defaultSelectedFacilityId);
@@ -31,14 +31,29 @@ const Filter = ({
     // setAll(facilityIds)
   }, [defaultSelectedFacilityId, defaultSelectedFacilityName]);
 
-  const handleFilter = () => {
+  const handleFilter = (
+    selectedFacilityId: string,
+    selectedFacilityName: string,
+    fromDate: any,
+    toDate: any
+  ) => {
     if (selectedFacilityId && selectedFacilityName && fromDate && toDate) {
       if (moment(fromDate).isAfter(toDate)) {
         toast("To Date should not be greater than From Date");
         return;
       }
+      let ids = selectedFacilityId;
+      if (selectedFacilityId == "all") {
+        ids = list
+          .filter(
+            (facility: any) =>
+              facility.facilityid !== "all" && facility.facilityid !== "28"
+          )
+          .map((facility: any) => facility.facilityid)
+          .join(",");
+      }
       onChange?.(
-        selectedFacilityId,
+        ids,
         moment(fromDate).format("DD-MMM-YYYY"),
         moment(toDate).format("DD-MMM-YYYY")
       );
@@ -49,7 +64,7 @@ const Filter = ({
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/")
+    navigate("/");
   };
 
   return (
@@ -64,7 +79,8 @@ const Filter = ({
                   <button
                     type="button"
                     className="btn btn-warning"
-                    disabled={!otherFaciltyAccess}>
+                    disabled={!otherFaciltyAccess}
+                  >
                     {selectedFacilityName || "Select Facility"}
                   </button>
                   <button
@@ -72,28 +88,23 @@ const Filter = ({
                     className="btn btn-warning dropdown-toggle dropdown-toggle-split"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
-                    disabled={!otherFaciltyAccess}>
+                    disabled={!otherFaciltyAccess}
+                  >
                     <span className="visually-hidden">Toggle Dropdown</span>
                   </button>
                   <ul className="dropdown-menu">
-                    <li><a
-                          className="dropdown-item"
-                          href="#"
-                          onClick={() => {
-                            setSelectedFacilityId("13, 14, 4, 3, 25, 26, 29, 28");
-                            setSelectedFacilityName("All");
-                          }}>
-                          All
-                        </a></li>
                     {list.map((item: any, index: any) => (
                       <li key={index}>
                         <a
                           className="dropdown-item"
                           href="#"
                           onClick={() => {
-                            setSelectedFacilityId(item.facilityid);
+                            let ids: any = item.facilityid;
+                            setSelectedFacilityId(ids);
                             setSelectedFacilityName(item.name);
-                          }}>
+                            handleFilter(ids, item.name, fromDate, toDate);
+                          }}
+                        >
                           {item.name}
                         </a>
                       </li>
@@ -109,9 +120,18 @@ const Filter = ({
                     placeholder="From Date"
                     style={{ width: 230 }}
                     oneTap
-                    shouldDisableDate={(date) => moment(date).isAfter(new Date())}
+                    shouldDisableDate={(date) =>
+                      moment(date).isAfter(new Date())
+                    }
                     onChange={(value) => {
-                      setFromDate(moment(value).format("DD-MMM-YYYY"));
+                      const date = moment(value).format("DD-MMM-YYYY");
+                      setFromDate(date);
+                      handleFilter(
+                        selectedFacilityId,
+                        selectedFacilityName,
+                        date,
+                        toDate
+                      );
                     }}
                     onClean={() => {
                       setFromDate(null);
@@ -131,32 +151,42 @@ const Filter = ({
                       moment(date).isBefore(fromDate)
                     }
                     onChange={(value) => {
-                      setToDate(moment(value).format("DD-MMM-YYYY"));
+                      const date = moment(value).format("DD-MMM-YYYY");
+                      setToDate(date);
+                      handleFilter(
+                        selectedFacilityId,
+                        selectedFacilityName,
+                        fromDate,
+                        date
+                      );
                     }}
                     onClean={() => {
                       setToDate(null);
                     }}
                   />
                 </InputGroup>
-                <Button
-                  appearance="primary"
-                  onClick={handleFilter}
-                  style={{ marginLeft: "20px" }}>
-                  Filter
-                </Button>
               </div>
               <div className="dropdown">
                 <button
                   className="btn btn-link"
-                  type="button" style={{textDecoration:"none", textTransform:"capitalize"}}
+                  type="button"
+                  style={{
+                    textDecoration: "none",
+                    textTransform: "capitalize",
+                  }}
                   data-bs-toggle="dropdown"
-                  aria-expanded="false">
+                  aria-expanded="false"
+                >
                   <i className="fas fa-user fa-lg"></i>
                   &nbsp;&nbsp; Hi, {localStorage.getItem("username")}
                 </button>
                 <ul className="dropdown-menu dropdown-menu-end">
                   <li>
-                    <a className="dropdown-item" href="#" onClick={handleLogout}>
+                    <a
+                      className="dropdown-item"
+                      href="#"
+                      onClick={handleLogout}
+                    >
                       Logout
                     </a>
                   </li>
