@@ -17,7 +17,7 @@ const Sidebar = () => {
             
                 <div className={`sidebar ${isOpen ? "sidebar-open" : ""}`}>
                     <div className="sidebar-header">
-                        <img className="img-fluid" src="logo.jpeg" />
+                        <img style={{width:'70%', marginLeft:"0px"}} src="logo.jpeg" />
                         <i className="fas fa-bars toggle-icon " onClick={toggleSidebar}></i>
                     </div>
                     <ul className="list-unstyled">

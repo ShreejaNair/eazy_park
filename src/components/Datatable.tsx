@@ -1,15 +1,42 @@
-import DataTable from 'react-data-table-component';
+import DataTable, { TableStyles } from 'react-data-table-component';
+import { Vehicle_details} from '../typscript/dashboard';
+import { useState } from 'react';
 
-const Datatables = () => {
+
+const Datatables = ({vehicleData}:{vehicleData: Vehicle_details[]}) => {
+    
   const columns = [
+    { name: 'Vehicle Name', selector: (row:any) => row.vehicletype },
     { name: 'Facility Name', selector: (row:any) => row.facilityname },
     { name: 'Check In Date', selector: (row:any) => row.checkindatetime },
     { name: 'Check Out Date', selector: (row:any) => row.checkoutdatetime },
     { name: 'Number Plate', selector: (row:any) => row.vehregnumber },
-    { name: 'Payment Mode', selector: (row:any) => row.paymentmode },
-    { name: 'Amount', selector: (row:any) => row.amountreceived },
+    // { name: 'Payment Mode', selector: (row:any) => row.paymentmode },
+    { name: 'Amount', selector: (row:any) => `₹ ${row.amountreceived} `},
    
   ];
+  const customStyles:TableStyles  = {
+    headCells: {
+      style: {
+        backgroundColor: '#6a4895', // Light grey background
+        color: '#fff', // Dark text color
+        fontWeight: 'bold', // Make text bold
+        fontSize: '16px', // Larger text size
+        display: 'flex',
+        justifyContent: 'center', // Centers horizontally
+        alignItems: 'center', 
+        height: '75px'
+      },
+    },
+    cells: {
+        style: {
+            display: 'flex',
+            justifyContent: 'center', // Centers horizontally
+            alignItems: 'center', // Center the body content
+            fontSize: '16px',
+        },
+      },
+  };
 
   const data = [
     {
@@ -69835,8 +69862,37 @@ const Datatables = () => {
         "facilityname": "Demo"
     }
 ];
+const [searchTerm, setSearchTerm] = useState("");
 
-  return <DataTable columns={columns} data={data} pagination />;
+  const filteredData = data.filter((item) =>
+    item.vehregnumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.facilityname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.vehicletype.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+
+  return (
+    <div style={{ maxHeight: '700px', maxWidth: '100%', overflowX: 'auto', overflowY: 'auto' }}>
+        <input
+        type="text"
+        placeholder="Search ...."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: "10px", padding: "5px", width: "20%", border:'1px solid #eee', borderRadius: "4px", }}
+      />
+        <DataTable
+  columns={columns}
+  data={filteredData}
+  customStyles={customStyles}
+  pagination
+  style={{borderRadius:'10px'}}
+  fixedHeader
+  fixedHeaderScrollHeight="500px"
+/>
+    </div>
+  )
+  
+  
 };
 
 export default Datatables;

@@ -309,7 +309,7 @@ const Dashboard = () => {
           sales={last3MnthSales}
           details={paymentType}
         /> */}
-        <Datatables/>
+        <Datatables vehicleData={vehicles}/>
       </div>
       
         <div className="col-md-6 col-lg-4 col-xl-3 order-0 mb-4">

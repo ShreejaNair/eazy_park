@@ -93,4 +93,13 @@
   .sidebar-open ~ .content {
     margin-left: 250px; /* Adjusted for expanded sidebar */
   }
+  /* Date Range */
+.rs-picker-daterange-calendar-group {
+  display: flex;
+}
+
+/* Date Range */
+.rs-input-group.rs-input-group-inside {
+  width: 80% !important;
+}
   

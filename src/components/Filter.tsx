@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import moment from "moment";
-import { DatePicker, InputGroup, Button } from "rsuite";
+import { DatePicker, InputGroup, Button, DateRangePicker } from "rsuite";
 import "rsuite/DatePicker/styles/index.css";
 import { isAfter } from "rsuite/esm/internals/utils/date";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +37,13 @@ const Filter = ({
     fromDate: any,
     toDate: any
   ) => {
+    console.log(
+      "selectedFacilityId && selectedFacilityName && fromDate && toDate",
+      selectedFacilityId,
+      selectedFacilityName,
+      fromDate,
+      toDate
+    );
     if (selectedFacilityId && selectedFacilityName && fromDate && toDate) {
       if (moment(fromDate).isAfter(toDate)) {
         toast("To Date should not be greater than From Date");
@@ -67,6 +74,59 @@ const Filter = ({
     navigate("/");
   };
 
+  const renderFormDate = () => {
+    return (
+      <DatePicker
+        defaultValue={fromDate}
+        format="dd-MMM-yyyy"
+        block
+        appearance="subtle"
+        placeholder="From Date"
+        style={{ width: 230 }}
+        oneTap
+        shouldDisableDate={(date) => moment(date).isAfter(new Date())}
+        onChange={(value) => {
+          const date = moment(value).format("DD-MMM-YYYY");
+          setFromDate(date);
+          handleFilter(selectedFacilityId, selectedFacilityName, date, toDate);
+        }}
+        onClean={() => {
+          setFromDate(null);
+        }}
+      />
+    );
+  };
+
+  const renderToDate = () => {
+    return (
+      <DatePicker
+        defaultValue={toDate}
+        format="dd-MMM-yyyy"
+        block
+        oneTap
+        appearance="subtle"
+        placeholder="To Date"
+        style={{ width: 230 }}
+        shouldDisableDate={(date) =>
+          moment(date).isAfter(new Date()) || moment(date).isBefore(fromDate)
+        }
+        onChange={(value) => {
+          const date = moment(value).format("DD-MMM-YYYY");
+          setToDate(date);
+          handleFilter(
+            selectedFacilityId,
+            selectedFacilityName,
+            fromDate,
+            date
+          );
+        }}
+        onClean={() => {
+          setToDate(null);
+        }}
+      />
+    );
+  };
+
   return (
     <div className="col-lg-12 mb-4 order-0">
       <div className="card border-0 shadow-sm bg-body rounded">
@@ -80,7 +140,8 @@ const Filter = ({
                     type="button"
                     className="btn btn-warning"
                     disabled={!otherFaciltyAccess}
-                  >
+                    style={{width: "250px", textAlign:'left'}}
+                    >
                     {selectedFacilityName || "Select Facility"}
                   </button>
                   <button
@@ -88,8 +149,7 @@ const Filter = ({
                     className="btn btn-warning dropdown-toggle dropdown-toggle-split"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
-                    disabled={!otherFaciltyAccess}
-                  >
+                    disabled={!otherFaciltyAccess}>
                     <span className="visually-hidden">Toggle Dropdown</span>
                   </button>
                   <ul className="dropdown-menu">
@@ -103,68 +163,46 @@ const Filter = ({
                             setSelectedFacilityId(ids);
                             setSelectedFacilityName(item.name);
                             handleFilter(ids, item.name, fromDate, toDate);
-                          }}
-                        >
+                          }}>
                           {item.name}
                         </a>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <InputGroup className="shadow-sm" style={{ width: 428 }}>
-                  <DatePicker
-                    defaultValue={fromDate}
-                    format="dd-MMM-yyyy"
-                    block
-                    appearance="subtle"
-                    placeholder="From Date"
-                    style={{ width: 230 }}
-                    oneTap
-                    shouldDisableDate={(date) =>
-                      moment(date).isAfter(new Date())
-                    }
-                    onChange={(value) => {
-                      const date = moment(value).format("DD-MMM-YYYY");
-                      setFromDate(date);
-                      handleFilter(
-                        selectedFacilityId,
-                        selectedFacilityName,
-                        date,
-                        toDate
-                      );
-                    }}
-                    onClean={() => {
-                      setFromDate(null);
-                    }}
-                  />
+                {/* <InputGroup> */}
+                {/* {renderFormDate()}
                   <InputGroup.Addon>to</InputGroup.Addon>
-                  <DatePicker
-                    defaultValue={toDate}
-                    format="dd-MMM-yyyy"
-                    block
-                    oneTap
-                    appearance="subtle"
-                    placeholder="To Date"
-                    style={{ width: 230 }}
-                    shouldDisableDate={(date) =>
-                      moment(date).isAfter(new Date()) ||
-                      moment(date).isBefore(fromDate)
-                    }
-                    onChange={(value) => {
-                      const date = moment(value).format("DD-MMM-YYYY");
-                      setToDate(date);
+                  {renderToDate()} */}
+                <DateRangePicker
+                  oneTap
+                  appearance="subtle"
+                  character=" - "
+                  showHeader={false}
+                  defaultValue={[fromDate, toDate]}
+                  format="dd/MMM/yyyy"
+                  size="lg"
+                  placeholder="Select Date"
+                  onClean={() => {
+                    setFromDate(null);
+                    setToDate(null);
+                  }}
+                  onOk={(value: [Date, Date]) => {
+                    if (value[0] && value[1]) {
+                      const startDate = moment(value[0]).format("DD/MMMYYYY");
+                      const endDate = moment(value[1]).format("DD/MMM/YYYY");
+                      setFromDate(startDate);
+                      setToDate(endDate);
                       handleFilter(
                         selectedFacilityId,
                         selectedFacilityName,
-                        fromDate,
-                        date
+                        startDate,
+                        endDate
                       );
-                    }}
-                    onClean={() => {
-                      setToDate(null);
-                    }}
-                  />
-                </InputGroup>
+                    }
+                  }}
+                />
+                {/* </InputGroup> */}
               </div>
               <div className="dropdown">
                 <button
@@ -175,8 +213,7 @@ const Filter = ({
                     textTransform: "capitalize",
                   }}
                   data-bs-toggle="dropdown"
-                  aria-expanded="false"
-                >
+                  aria-expanded="false">
                   <i className="fas fa-user fa-lg"></i>
                   &nbsp;&nbsp; Hi, {localStorage.getItem("username")}
                 </button>
@@ -185,8 +222,7 @@ const Filter = ({
                     <a
                       className="dropdown-item"
                       href="#"
-                      onClick={handleLogout}
-                    >
+                      onClick={handleLogout}>
                       Logout
                     </a>
                   </li>

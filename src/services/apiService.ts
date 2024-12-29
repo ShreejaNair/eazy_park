@@ -27,9 +27,9 @@ api.interceptors.response.use(
       localStorage.removeItem("authToken");
       window.location.href = "/login";
     } else if (status >= 400 && status < 500) {
-      console.error("Client error:", error.response.data);
+      console.error("Client error:", error?.response?.data);
     } else {
-      console.error("Server error:", error.response.data || "Unexpected error");
+      console.error("Server error:", error?.response?.data || "Unexpected error");
     }
     return Promise.reject(error);
   }
