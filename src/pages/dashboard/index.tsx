@@ -21,6 +21,10 @@ import {
 } from "../../typscript/dashboard";
 import StackedBar from "../../components/StackedBar";
 import CollapsiblePanels from "../../components/CollapsiblePanel";
+import checks from '../../data/checkIn.json'
+import vehicleData from '../../data/vehicle.json'
+import paymentData from  '../../data/payment.json'
+import Datatables from "../../components/Datatable";
 
 
 const Dashboard = () => {
@@ -47,23 +51,36 @@ const Dashboard = () => {
     const togglePanel = (panel: string) => {
         setActivePanel(activePanel === panel ? "" : panel);
     };
+    
   useEffect(() => {
     try {
       const getReport = async () => {
+        console.log("rofff")
         let id = localStorage.getItem("facilityId") || "";
         const facilityId = "29";
         const date = moment().format("DD-MMM-YYYY");
         // const date = "14-Dec-2024";
-        const response = await dashboard(facilityId, token, date);
-        if (response?.data?.data?.[0]) {
-          setCheckIn(response.data.data[0]?.checkin || []);
-          setCheckOut(response.data.data[0]?.checkout || []);
-          setPaymentmode(response.data.data[0]?.payment || []);
+        // const response = await dashboard(facilityId, token, date);
+        //temporary changes
+        const response = checks
+        // if (response?.data?.data?.[0]) {
+        //   setCheckIn(response.data.data[0]?.checkin || []);
+        //   setCheckOut(response.data.data[0]?.checkout || []);
+        //   setPaymentmode(response.data.data[0]?.payment || []);
+        // }
+        //temporary changes if loop
+        if (response?.data?.[0]) {
+          let checkin = response.data[0].checkin
+          console.log("jhgfj",typeof(response.data[0].checkin))
+          setCheckIn(checkin);
+          setCheckOut(response.data[0].checkout);
+          setPaymentmode(response.data[0].payment || []);
         }
       };
       if (role && token && Number(role) != 5001) {
         getReport();
       }
+      getReport();
     } catch (error) {
       toast.error("Something went wrong, Try again Later");
     }
@@ -111,7 +128,9 @@ const Dashboard = () => {
 
   const getAllPayments = async () => {
     try {
-      const response = await getAllPaymentTypes(token);
+      // const response = await getAllPaymentTypes(token);
+      const response = paymentData;
+      console.log("pay",response.data.options)
       let data: Vehicle_details[] = [];
       let pay = null;
       if (response?.data?.options?.[0]) {
@@ -131,7 +150,9 @@ const Dashboard = () => {
 
   const getVehicles = async () => {
     try {
-      const response = await getAllVehicles(token);
+      // const response = await getAllVehicles(token);
+      const response = vehicleData;
+      console.log("vehicles", response.data.details)
       let data: Vehicle_details[] = [];
       let vehicle = null;
       if (response?.data?.details?.[0]) {
@@ -271,7 +292,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="row">
+      <div className="row px-2">
         <Filter
           list={facilityList}
           onChange={handleFilterchange}
@@ -280,16 +301,17 @@ const Dashboard = () => {
           otherFaciltyAccess={otherFaciltyAccess}
         />
       </div>
-      <div className="row">
+      <div className="row px-2">
       
       <div className="col-md-6 col-lg-4 col-xl-9 order-0 mb-4">
-        <StackedBar
+        {/* <StackedBar
           labels={label}
           sales={last3MnthSales}
           details={paymentType}
-        />
+        /> */}
+        <Datatables/>
       </div>
-        
+      
         <div className="col-md-6 col-lg-4 col-xl-3 order-0 mb-4">
           <CollapsiblePanels title="Check In"
             ispayment={false}

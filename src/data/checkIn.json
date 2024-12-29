@@ -1,0 +1,44 @@
+{
+    "data": [
+        {
+            "facilityname": "Healing Hands Clinic",
+            "checkin": [
+                {
+                    "vehicletype": 1,
+                    "vehicletypename": null,
+                    "vehiclecount": 313
+                },
+                {
+                    "vehicletype": 2,
+                    "vehicletypename": null,
+                    "vehiclecount": 178
+                }
+            ],
+            "checkout": [
+                {
+                    "vehicletype": 1,
+                    "vehicletypename": null,
+                    "vehiclecount": 98
+                },
+                {
+                    "vehicletype": 2,
+                    "vehicletypename": null,
+                    "vehiclecount": 148
+                }
+            ],
+            "payment": [
+                {
+                    "paymentmode": 2,
+                    "amountcollected": 274000
+                },
+                {
+                    "paymentmode": 3,
+                    "amountcollected": 238500
+                }
+            ]
+        }
+    ],
+    "respCode": 1,
+    "version": null,
+    "message": null
+}

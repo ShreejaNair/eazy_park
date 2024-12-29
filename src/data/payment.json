@@ -1,0 +1,30 @@
+{
+    "data": {
+        "options": [
+        {
+            "statuscode": 5,
+            "status": "Exempt"
+        },
+        {
+            "statuscode": 1,
+            "status": "Online to Incubermax"
+        },
+        {
+            "statuscode": 2,
+            "status": "Cash"
+        },
+        {
+            "statuscode": 3,
+            "status": "Online"
+        },
+        {
+            "statuscode": 7,
+            "status": "FT"
+        }
+    ]
+    },
+    "relogin": false,
+    "respCode": 1,
+    "version": null,
+    "message": null
+}

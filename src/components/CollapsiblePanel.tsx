@@ -7,24 +7,28 @@ const CollapsiblePanels = ({ title, ispayment, report, details, activePanel, tog
     const [total, setTotal] = useState<number>(0)
 
     return (
-        <div className='w-full'>
-            <div style={{ marginBottom: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
+        <div className='w-full '>
+            <div style={{ marginBottom: '10px' }}>
                 <div
                     onClick={() => toggleFn(title)}
                     style={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        padding: '10px',
-                        backgroundColor: '#f0f0f0',
+                        padding: '0px 15px',
+                        backgroundColor: '#57358b',
                         cursor: 'pointer',
                         fontWeight: 'bold',
+                        height: '77px',
+                        alignItems: 'center',
+                        color: 'white',
+                        borderRadius:'10px'
                     }}
                 >
                     <span>{title}</span>
-                    <span>Total of: {total}</span>
+                    <span>Total {ispayment?"₹ ":""}{total}</span>
                 </div>
                 {activePanel === title && (
-                    <div style={{ padding: '10px', backgroundColor: '#fff' }}>
+                    <div className='shadow-sm' style={{ padding: '0px', backgroundColor: '#fff' }}>
                         <p><Cards
                             title={title}
                             ispayment={ispayment}

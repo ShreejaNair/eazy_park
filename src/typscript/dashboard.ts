@@ -1,6 +1,6 @@
 export interface CheckReport  {
     vehicletype: number,
-    vehicletypename: string,
+    vehicletypename: string | null,
     vehiclecount: number
 }
 

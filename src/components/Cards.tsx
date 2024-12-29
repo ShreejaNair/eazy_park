@@ -36,10 +36,10 @@ const Cards = ({ title, ispayment, report, details, setTotal }: { title: string,
     }, [report, details])
 
     return (
-        <div className="w-full">
-            <div className="card shadow-sm mb-5 bg-body rounded border-0">
+        <div >
+            <div className="card bg-body rounded border-0">
                 
-                <div className="card-body p-4">
+                <div className="card-body p-3">
                     {/* <div className="d-flex justify-content-between align-items-center mb-3">
                         
                         <div id="orderStatisticsChart">
