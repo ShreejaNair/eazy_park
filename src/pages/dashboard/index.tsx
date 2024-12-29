@@ -20,6 +20,8 @@ import {
   Payment_Type,
 } from "../../typscript/dashboard";
 import StackedBar from "../../components/StackedBar";
+import CollapsiblePanels from "../../components/CollapsiblePanel";
+
 
 const Dashboard = () => {
   const [checkIn, setCheckIn] = useState<CheckReport[]>([]);
@@ -40,6 +42,11 @@ const Dashboard = () => {
   const token: string = localStorage.getItem("token") || "";
   const allFacilityValue = { facilityid: "all", name: "All" };
   const role = localStorage.getItem("role");
+  const [activePanel, setActivePanel] = useState<string>("Check In");
+
+    const togglePanel = (panel: string) => {
+        setActivePanel(activePanel === panel ? "" : panel);
+    };
   useEffect(() => {
     try {
       const getReport = async () => {
@@ -274,29 +281,42 @@ const Dashboard = () => {
         />
       </div>
       <div className="row">
-        <Cards
-          title="Check In"
-          ispayment={false}
-          report={checkIn}
-          details={vehicles}
-        />
-        <Cards
-          title="Check Out"
-          ispayment={false}
-          report={checkOut}
-          details={vehicles}
-        />
-        <Cards
-          title="Payment"
-          ispayment={true}
-          report={paymentMode}
-          details={paymentType}
-        />
+      
+      <div className="col-md-6 col-lg-4 col-xl-9 order-0 mb-4">
         <StackedBar
           labels={label}
           sales={last3MnthSales}
           details={paymentType}
         />
+      </div>
+        
+        <div className="col-md-6 col-lg-4 col-xl-3 order-0 mb-4">
+          <CollapsiblePanels title="Check In"
+            ispayment={false}
+            report={checkIn}
+            details={vehicles}
+            activePanel={activePanel}
+            toggleFn = {togglePanel}
+            />
+            <CollapsiblePanels title="Check Out"
+            ispayment={false}
+            report={checkOut}
+            details={vehicles}
+            activePanel={activePanel}
+            toggleFn = {togglePanel}
+            />
+            <CollapsiblePanels
+            title="Payment"
+            ispayment={true}
+            report={paymentMode}
+            details={paymentType}
+            activePanel={activePanel}
+            toggleFn = {togglePanel}
+          />
+          
+        </div>
+        
+        
       </div>
     </>
   );
